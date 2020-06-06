@@ -2,6 +2,9 @@
 
 
 #include "KillThemAllGameMode.h"
+#include "EngineUtils.h"
+#include "GameFramework/Controller.h"
+#include "ShooterAIController.h"
 
 
 void AKillThemAllGameMode::PawnKilled(APawn* PawnKilled) 
@@ -12,9 +15,24 @@ void AKillThemAllGameMode::PawnKilled(APawn* PawnKilled)
 
     if (PlayerController) 
     {
-        PlayerController->GameHasEnded(nullptr, false);
+        EndGame(false);
     }
-    
-    UE_LOG(LogTemp, Warning, TEXT("one pawn got killed"));    
+
+    for (AShooterAIController* AIController : TActorRange<AShooterAIController>(GetWorld()))
+    {
+        if(!AIController->IsDead()) return;
+    }
+
+    EndGame(true);   
+}
+
+void AKillThemAllGameMode::EndGame(bool bIsPlayerWinner) 
+{
+    for (AController* Controller : TActorRange<AController>(GetWorld()))
+    {
+        bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;
+        Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
+    }
+        
 }
     
