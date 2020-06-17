@@ -8,25 +8,25 @@
 #include "AIController.h"
 
 
-UBTService_PlayerLocationIfSeen::UBTService_PlayerLocationIfSeen() 
+UBTService_PlayerLocationIfSeen::UBTService_PlayerLocationIfSeen()
 {
     NodeName = "Update Player Location If Seen";
 }
 
-void UBTService_PlayerLocationIfSeen::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) 
+void UBTService_PlayerLocationIfSeen::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-    APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);  
+    APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     AAIController* AIController = OwnerComp.GetAIOwner();
-    if (!PlayerPawn || !AIController) return;    
+    if (!PlayerPawn || !AIController) return;
 
     if (AIController->LineOfSightTo(PlayerPawn))
     {
-        OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), PlayerPawn->GetActorLocation());
+        OwnerComp.GetBlackboardComponent()->SetValueAsObject(GetSelectedBlackboardKey(), PlayerPawn);
     }
     else
     {
         OwnerComp.GetBlackboardComponent()->ClearValue(GetSelectedBlackboardKey());
-    }        
+    }
 }
